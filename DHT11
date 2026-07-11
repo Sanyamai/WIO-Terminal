@@ -1,0 +1,51 @@
+// เรียกใช้งานไลบรารี DHT สำหรับควบคุมเซ็นเซอร์ DHT11
+#include <DHT.h>
+
+// กำหนดขาที่เชื่อมต่อกับขา DATA ของ DHT11
+// ในตัวอย่างนี้ใช้ขา D0 ของ Wio Terminal
+#define DHTPIN D0
+
+// กำหนดชนิดของเซ็นเซอร์ที่ใช้งาน
+// หากเป็น DHT22 ให้เปลี่ยนเป็น DHT22
+#define DHTTYPE DHT11
+
+// สร้างออบเจ็กต์ชื่อ dht พร้อมกำหนดขาและชนิดเซ็นเซอร์
+DHT dht(DHTPIN, DHTTYPE);
+
+void setup() {
+
+  // เปิดการสื่อสารผ่าน Serial Monitor
+  // กำหนดความเร็วในการสื่อสาร 115200 bps
+  Serial.begin(115200);
+
+  // เริ่มต้นการทำงานของเซ็นเซอร์ DHT11
+  dht.begin();
+
+}
+
+void loop() {
+
+  // อ่านค่าอุณหภูมิ (Temperature)
+  // หน่วยเป็นองศาเซลเซียส (°C)
+  float t = dht.readTemperature();
+
+  // อ่านค่าความชื้นสัมพัทธ์ (Humidity)
+  // หน่วยเป็นเปอร์เซ็นต์ (%RH)
+  float h = dht.readHumidity();
+
+  // แสดงข้อความ "Temp : "
+  Serial.print("Temp : ");
+
+  // แสดงค่าอุณหภูมิที่อ่านได้
+  Serial.println(t);
+
+  // แสดงข้อความ "Humidity : "
+  Serial.print("Humidity : ");
+
+  // แสดงค่าความชื้นที่อ่านได้
+  Serial.println(h);
+
+  // หน่วงเวลา 1 วินาที ก่อนอ่านค่ารอบถัดไป
+  delay(1000);
+
+}
