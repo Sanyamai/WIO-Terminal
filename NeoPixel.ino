@@ -1,68 +1,103 @@
-#include <Adafruit_NeoPixel.h>
+#include <Servo.h>
+#include <TFT_eSPI.h>
 
-// กำหนดขาพอร์ต GPIO27 สำหรับติดต่อกับ LED
-#define PIN D4
+// สร้างออบเจ็กต์ Servo
+Servo myservo;
 
-// กำหนดจำนวนดวง LED RGB ที่ใช้งาน
-#define NUMPIXELS 12
+// สร้างออบเจ็กต์สำหรับหน้าจอ Wio Terminal
+TFT_eSPI tft = TFT_eSPI();
 
-// สร้างออบเจ็กต์ pixels เพื่อควบคุมการแสดงผล
-Adafruit_NeoPixel pixels = Adafruit_NeoPixel(
-  NUMPIXELS,
-  PIN,
-  NEO_GRB + NEO_KHZ800
-);
 
-void setup()
-{
-  // เริ่มต้นกระบวนการทำงานของ LED RGB
-  pixels.begin();
+void setup() {
 
-  // กำหนดค่าความสว่างระดับ 10 (ช่วง 0–255)
-  pixels.setBrightness(10);
+  // เริ่มต้นการทำงานของหน้าจอ
+  tft.begin();
 
-  // ปรับปรุงการแสดงผลล่าสุดของ LED
-  pixels.show();
+  // กำหนดทิศทางหน้าจอ
+  tft.setRotation(3);
+
+  // ล้างหน้าจอให้เป็นสีดำ
+  tft.fillScreen(TFT_BLACK);
+
+  // กำหนด Servo ให้ควบคุมที่ขา D9
+  myservo.attach(D9);
+
+  // เริ่มต้น Servo ที่ 20 องศา
+  showServo(20);
 }
 
-void loop()
-{
-  // วนแสดงผล LED ให้ครบทุกดวง
-  for (int i = 0; i < NUMPIXELS; i++)
-  {
-    // จับ LED แสดงแสงสีแดง
-    pixels.setPixelColor(i, pixels.Color(255, 0, 0));
 
-    // ปรับปรุงการแสดงผลล่าสุดของ LED
-    pixels.show();
-  }
+void loop() {
 
-  // หน่วงเวลา 1 วินาที
-  delay(1000);
+  // หมุน Servo ไปที่ 20 องศา
+  showServo(20);
+  delay(2000);
 
-  // วนแสดงผล LED ให้ครบทุกดวง
-  for (int i = 0; i < NUMPIXELS; i++)
-  {
-    // จับ LED แสดงแสงสีเขียว
-    pixels.setPixelColor(i, pixels.Color(0, 255, 0));
+  // หมุน Servo ไปที่ 90 องศา
+  showServo(90);
+  delay(2000);
 
-    // ปรับปรุงการแสดงผลล่าสุดของ LED
-    pixels.show();
-  }
+  // หมุน Servo ไปที่ 170 องศา
+  showServo(170);
+  delay(2000);
+}
 
-  // หน่วงเวลา 1 วินาที
-  delay(1000);
 
-  // วนแสดงผล LED ให้ครบทุกดวง
-  for (int i = 0; i < NUMPIXELS; i++)
-  {
-    // จับ LED แสดงแสงสีน้ำเงิน
-    pixels.setPixelColor(i, pixels.Color(0, 0, 255));
+// ฟังก์ชันสำหรับควบคุม Servo และแสดงผลบนหน้าจอ
+void showServo(int angle) {
 
-    // ปรับปรุงการแสดงผลล่าสุดของ LED
-    pixels.show();
-  }
+  // สั่ง Servo ไปยังมุมที่กำหนด
+  myservo.write(angle);
 
-  // หน่วงเวลา 1 วินาที
-  delay(1000);
+  // ล้างหน้าจอ
+  tft.fillScreen(TFT_BLACK);
+
+
+  // -------------------------
+  // แสดงหัวข้อ
+  // -------------------------
+
+  tft.setTextColor(TFT_CYAN);
+  tft.setTextSize(3);
+
+  tft.setCursor(45, 25);
+  tft.print("SERVO TEST");
+
+
+  // -------------------------
+  // แสดงค่ามุม Servo
+  // -------------------------
+
+  tft.setTextColor(TFT_WHITE);
+  tft.setTextSize(6);
+
+  tft.setCursor(70, 80);
+  tft.print(angle);
+
+  // แสดงเครื่องหมายองศา
+  tft.print((char)247);
+
+
+  // -------------------------
+  // แสดงขาที่ใช้
+  // -------------------------
+
+  tft.setTextColor(TFT_GREEN);
+  tft.setTextSize(2);
+
+  tft.setCursor(80, 160);
+  tft.print("Servo : D9");
+
+
+  // -------------------------
+  // แสดงสถานะ
+  // -------------------------
+
+  tft.setTextColor(TFT_YELLOW);
+
+  tft.setCursor(80, 190);
+  tft.print("Angle : ");
+
+  tft.print(angle);
+  tft.print(" deg");
 }
