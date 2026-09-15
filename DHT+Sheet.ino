@@ -14,7 +14,7 @@ const char* password = "88888888";
 // Google Apps Script
 // =====================================================
 const char* googleURL =
-"https://script.google.com/macros/s/AKfycbwgGvuDWG8P5VgaNDZeSkvZc8sfGdtkqETKrY753zZT91Fbuvt8byderojq44JLhOMM/exec";
+"ใส่ลิ้งค์ App Script ตรงนี้นะจร๊ะ";
 
 // =====================================================
 // DHT11
