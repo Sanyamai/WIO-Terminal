@@ -1,35 +1,36 @@
-function saveWioData(e) {
+function testWioData() {
 
   try {
 
-    // =================================================
+    // -----------------------------------------------
     // Google Spreadsheet
-    // =================================================
+    // -----------------------------------------------
 
-    const ss = SpreadsheetApp.getActiveSpreadsheet();
+    const ss =
+      SpreadsheetApp.getActiveSpreadsheet();
+
+
+    // -----------------------------------------------
+    // Sheet
+    // -----------------------------------------------
 
     const sheet =
       ss.getSheetByName('Sheet1') ||
       ss.getSheets()[0];
 
 
-    // =================================================
-    // รับค่าจาก Wio Terminal
-    // =================================================
+    // -----------------------------------------------
+    // จำลองข้อมูลจาก Wio Terminal
+    // -----------------------------------------------
 
-    const temperature =
-      e.parameter.temperature || '';
-
-    const humidity =
-      e.parameter.humidity || '';
-
-    const device =
-      e.parameter.device || 'Wio Terminal';
+    const temperature = 30.5;
+    const humidity = 70.2;
+    const device = 'TEST';
 
 
-    // =================================================
+    // -----------------------------------------------
     // บันทึกข้อมูล
-    // =================================================
+    // -----------------------------------------------
 
     sheet.appendRow([
       new Date(),
@@ -39,26 +40,30 @@ function saveWioData(e) {
     ]);
 
 
-    // =================================================
-    // ส่งผลกลับไป Wio
-    // =================================================
+    // -----------------------------------------------
+    // Log
+    // -----------------------------------------------
 
-    return ContentService
-      .createTextOutput('OK')
-      .setMimeType(
-        ContentService.MimeType.TEXT
-      );
+    Logger.log(
+      'Wio test data saved successfully'
+    );
+
+
+    return 'OK';
 
 
   } catch (error) {
 
-    return ContentService
-      .createTextOutput(
-        'ERROR: ' + error.toString()
-      )
-      .setMimeType(
-        ContentService.MimeType.TEXT
-      );
+    Logger.log(
+      'ERROR: ' + error.toString()
+    );
+
+
+    return (
+      'ERROR: ' +
+      error.toString()
+    );
 
   }
+
 }
