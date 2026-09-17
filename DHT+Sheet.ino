@@ -7,8 +7,8 @@
 // =====================================================
 // WiFi
 // =====================================================
-const char* ssid = "🐴🦄";
-const char* password = "88888888";
+const char* ssid = "ชื่อฮอตสปอต WIFI";
+const char* password = "รหัสฮอตสปอต WIFI";
 
 // =====================================================
 // Google Apps Script
@@ -33,6 +33,8 @@ TFT_eSPI tft = TFT_eSPI();
 // Timer
 // =====================================================
 unsigned long lastSend = 0;
+
+// ส่งข้อมูลทุก 10 วินาที
 const unsigned long sendInterval = 10000;
 
 // =====================================================
@@ -50,9 +52,10 @@ void setup() {
   Serial.begin(115200);
   delay(1000);
 
-  // ---------------------------------------------------
+  // ===================================================
   // TFT
-  // ---------------------------------------------------
+  // ===================================================
+
   tft.begin();
   tft.setRotation(3);
 
@@ -67,16 +70,20 @@ void setup() {
   tft.setCursor(10, 40);
   tft.println("DHT11 Monitor");
 
-  // ---------------------------------------------------
+
+  // ===================================================
   // DHT11
-  // ---------------------------------------------------
+  // ===================================================
+
   dht.begin();
 
   delay(1000);
 
-  // ---------------------------------------------------
+
+  // ===================================================
   // WiFi
-  // ---------------------------------------------------
+  // ===================================================
+
   connectWiFi();
 
   delay(2000);
@@ -88,24 +95,31 @@ void setup() {
 // =====================================================
 // LOOP
 // =====================================================
+
 void loop() {
 
-  // ---------------------------------------------------
+  // ===================================================
   // อ่าน DHT11
-  // ---------------------------------------------------
+  // ===================================================
+
   float temperature = dht.readTemperature();
   float humidity = dht.readHumidity();
 
-  // ---------------------------------------------------
-  // ตรวจสอบ DHT
-  // ---------------------------------------------------
+
+  // ===================================================
+  // ตรวจสอบ DHT11
+  // ===================================================
+
   if (isnan(temperature) || isnan(humidity)) {
 
+    Serial.println();
     Serial.println("DHT11 ERROR");
 
     tft.fillScreen(TFT_BLACK);
 
+    tft.setTextSize(2);
     tft.setTextColor(TFT_RED);
+
     tft.setCursor(10, 30);
     tft.println("DHT11 ERROR");
 
@@ -116,7 +130,7 @@ void loop() {
 
 
   // ===================================================
-  // SERIAL
+  // SERIAL MONITOR
   // ===================================================
 
   Serial.println();
@@ -139,7 +153,11 @@ void loop() {
 
   tft.setTextSize(2);
 
+
+  // ---------------------------------------------------
   // Title
+  // ---------------------------------------------------
+
   tft.setTextColor(TFT_WHITE);
 
   tft.setCursor(10, 10);
@@ -188,7 +206,8 @@ void loop() {
     tft.setTextColor(TFT_GREEN);
     tft.println("WiFi: OK");
 
-  } else {
+  }
+  else {
 
     tft.setTextColor(TFT_RED);
     tft.println("WiFi: ERROR");
@@ -198,7 +217,7 @@ void loop() {
 
 
   // ===================================================
-  // SEND GOOGLE
+  // SEND GOOGLE SHEETS
   // ===================================================
 
   if (millis() - lastSend >= sendInterval) {
@@ -225,6 +244,11 @@ void connectWiFi() {
   Serial.println();
   Serial.println("Connecting WiFi...");
 
+
+  // ---------------------------------------------------
+  // TFT
+  // ---------------------------------------------------
+
   tft.fillScreen(TFT_BLACK);
 
   tft.setTextSize(2);
@@ -233,12 +257,19 @@ void connectWiFi() {
   tft.setCursor(10, 30);
   tft.println("Connecting WiFi");
 
+
+  // ---------------------------------------------------
+  // Start WiFi
+  // ---------------------------------------------------
+
   WiFi.begin(
     ssid,
     password
   );
 
+
   int count = 0;
+
 
   while (
     WiFi.status() != WL_CONNECTED &&
@@ -252,12 +283,13 @@ void connectWiFi() {
     count++;
   }
 
+
   Serial.println();
 
 
-  // ---------------------------------------------------
+  // ===================================================
   // WiFi Connected
-  // ---------------------------------------------------
+  // ===================================================
 
   if (WiFi.status() == WL_CONNECTED) {
 
@@ -266,6 +298,7 @@ void connectWiFi() {
     Serial.print("IP: ");
     Serial.println(WiFi.localIP());
 
+
     tft.fillScreen(TFT_BLACK);
 
     tft.setTextColor(TFT_GREEN);
@@ -273,22 +306,25 @@ void connectWiFi() {
     tft.setCursor(10, 30);
     tft.println("WiFi CONNECTED");
 
+
     tft.setTextColor(TFT_WHITE);
 
     tft.setCursor(10, 65);
     tft.println(WiFi.localIP());
 
+
     delay(1500);
   }
 
 
-  // ---------------------------------------------------
+  // ===================================================
   // WiFi Failed
-  // ---------------------------------------------------
+  // ===================================================
 
   else {
 
     Serial.println("WiFi FAILED");
+
 
     tft.fillScreen(TFT_BLACK);
 
@@ -296,6 +332,7 @@ void connectWiFi() {
 
     tft.setCursor(10, 30);
     tft.println("WiFi FAILED");
+
 
     delay(2000);
   }
@@ -311,17 +348,26 @@ void sendToGoogle(
   float humidity
 ) {
 
-  // ---------------------------------------------------
-  // ตรวจ WiFi
-  // ---------------------------------------------------
+  // ===================================================
+  // ตรวจสอบ WiFi
+  // ===================================================
 
   if (WiFi.status() != WL_CONNECTED) {
 
     Serial.println("WiFi not connected");
 
+    tft.setCursor(10, 180);
+
+    tft.setTextColor(TFT_RED);
+    tft.println("Google: No WiFi");
+
     return;
   }
 
+
+  // ===================================================
+  // SERIAL
+  // ===================================================
 
   Serial.println();
   Serial.println("================================");
@@ -334,7 +380,11 @@ void sendToGoogle(
 
   String url = String(googleURL);
 
-  url += "?temperature=";
+  // สำคัญ:
+  // googleURL มี ?api=sensor อยู่แล้ว
+  // ดังนั้นค่าต่อไปต้องใช้ &
+
+  url += "&temperature=";
   url += String(temperature, 1);
 
   url += "&humidity=";
@@ -342,6 +392,10 @@ void sendToGoogle(
 
   url += "&device=Wio-Terminal";
 
+
+  // ===================================================
+  // แสดง URL
+  // ===================================================
 
   Serial.println("URL:");
   Serial.println(url);
@@ -353,10 +407,8 @@ void sendToGoogle(
 
   WiFiClientSecure client;
 
-  // ---------------------------------------------------
   // ไม่ตรวจสอบ Certificate
-  // ---------------------------------------------------
-  // ใช้สำหรับทดสอบ HTTPS กับ Google Apps Script
+  // ใช้สำหรับทดสอบ HTTPS
   client.setCACert(nullptr);
 
 
@@ -366,22 +418,23 @@ void sendToGoogle(
 
   HTTPClient http;
 
-
   Serial.println("Starting HTTPS...");
 
 
-  // ---------------------------------------------------
-  // เริ่ม HTTPS
-  // ---------------------------------------------------
+  // ===================================================
+  // BEGIN
+  // ===================================================
 
   if (!http.begin(client, url)) {
 
     Serial.println("HTTP BEGIN FAILED");
 
+
     tft.setCursor(10, 180);
 
     tft.setTextColor(TFT_RED);
     tft.println("Google: BEGIN ERR");
+
 
     client.stop();
 
@@ -397,6 +450,8 @@ void sendToGoogle(
     HTTPC_FORCE_FOLLOW_REDIRECTS
   );
 
+
+  // Timeout 15 วินาที
   http.setTimeout(15000);
 
 
@@ -409,6 +464,10 @@ void sendToGoogle(
   int httpCode = http.GET();
 
 
+  // ===================================================
+  // HTTP CODE
+  // ===================================================
+
   Serial.print("HTTP CODE: ");
   Serial.println(httpCode);
 
@@ -419,21 +478,26 @@ void sendToGoogle(
 
   if (httpCode > 0) {
 
-    String response = http.getString();
+    String response =
+      http.getString();
+
 
     Serial.println();
     Serial.println("RESPONSE:");
     Serial.println(response);
 
 
-    // -------------------------------------------------
+    // =================================================
     // SUCCESS
-    // -------------------------------------------------
+    // =================================================
 
-    if (response.indexOf("OK") >= 0) {
+    if (
+      response.indexOf("OK") >= 0
+    ) {
 
       Serial.println();
       Serial.println("GOOGLE SHEETS SUCCESS");
+
 
       tft.setCursor(10, 180);
 
@@ -443,14 +507,15 @@ void sendToGoogle(
     }
 
 
-    // -------------------------------------------------
-    // Response ไม่ใช่ OK
-    // -------------------------------------------------
+    // =================================================
+    // RESPONSE ERROR
+    // =================================================
 
     else {
 
       Serial.println();
       Serial.println("GOOGLE RESPONSE ERROR");
+
 
       tft.setCursor(10, 180);
 
@@ -472,6 +537,7 @@ void sendToGoogle(
     Serial.print("HTTPS ERROR: ");
     Serial.println(httpCode);
 
+
     tft.setCursor(10, 180);
 
     tft.setTextColor(TFT_RED);
@@ -488,6 +554,7 @@ void sendToGoogle(
   http.end();
 
   client.stop();
+
 
   tft.setTextColor(TFT_WHITE);
 
