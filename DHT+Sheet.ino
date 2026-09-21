@@ -19,7 +19,7 @@ const char* googleURL =
 // =====================================================
 // DHT11
 // =====================================================
-#define DHTPIN 0
+#define DHTPIN 0 //ต่อ pin 27
 #define DHTTYPE DHT11
 
 DHT dht(DHTPIN, DHTTYPE);
