@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 // กำหนดขาพอร์ต D0 สำหรับติดต่อกับ NeoPixel
-#define PIN D0
+#define PIN D6
 
 // กำหนดจำนวนดวง LED RGB ที่ใช้งาน
 #define NUMPIXELS 12
