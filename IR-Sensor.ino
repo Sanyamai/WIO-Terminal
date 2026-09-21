@@ -2,7 +2,7 @@
 
 TFT_eSPI tft = TFT_eSPI();
 
-#define IR_PIN BCM0
+#define IR_PIN BCM0 // ต่อ gpio 0
 
 void setup() {
 
