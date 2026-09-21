@@ -1,7 +1,7 @@
 #include <Adafruit_NeoPixel.h>
 
 // กำหนดขาพอร์ต GPIO27 สำหรับติดต่อกับ LED
-#define PIN BCM27
+#define PIN D0
 
 // กำหนดจำนวนดวง LED RGB ที่ใช้งาน
 #define NUMPIXELS 12
