@@ -32,7 +32,7 @@ TFT_eSPI tft = TFT_eSPI();
 // ======================================================
 
 // ขา TRIG ใช้ส่งคลื่น Ultrasonic ออกไป
-#define TRIG_PIN BCM0
+#define TRIG_PIN BCM0 //ต่อ gpio 0
 
 // ขา ECHO ใช้รับคลื่นที่สะท้อนกลับมา
 #define ECHO_PIN BCM1
